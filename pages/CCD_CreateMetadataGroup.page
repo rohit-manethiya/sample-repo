@@ -1,0 +1,197 @@
+<apex:page id="CCD_CreateMetadataGroup" standardController="Metadata_Group__c" extensions="CCD_CreateMetadataGroupExtension" lightningStylesheets="true" standardStylesheets="false" applyBodyTag="false" showHeader="true" docType="html-5.0">
+    <apex:slds />
+    <div class="slds-scope">
+        <apex:form id="groupForm">
+            <c:CopadoSpinner />
+            <div class="slds-page-header">
+                <apex:PageMessages id="messages"/>
+                <div class="slds-grid">
+                    <div class="slds-col slds-has-flexi-truncate">
+                        <div class="slds-media">
+                            <div class="slds-media__figure">
+                              <span class="slds-icon_container slds-icon-custom-custom67">
+                                <svg class="slds-icon" aria-hidden="true">
+                                  <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="{!URLFOR($Resource.SLDS,'/assets/icons/custom-sprite/svg/symbols.svg#custom67')}"></use>
+                                </svg>
+                              </span>
+                            </div>
+                            <div class="slds-media__body">
+                                <p class="slds-text-heading--label slds-line-height--reset">{!$ObjectType.Metadata_Group__c.Label}</p>
+                                <h1 class="slds-page-header__title slds-truncate slds-align-middle"
+                                    title="{!$Label.NEW} {!$ObjectType.Metadata_Group__c.Label}">
+                                    {!$Label.NEW} {!$ObjectType.Metadata_Group__c.Label}
+                                </h1>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-no-flex slds-grid slds-align-top ">
+                        <div class="slds-button-group" role="group">
+                            <apex:commandButton value="{!$Label.Save} {!$ObjectType.Metadata_Group__c.Label}" action="{!save}" reRender="groupForm,messages"
+                                                styleClass="slds-button slds-button_brand" onClick="lockScreen();" onComplete="unlockScreen();"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <apex:pageBlock title="{!$Label.GENERAL}">
+                <apex:pageBlockSection columns="2" collapsible="false">
+                    <apex:pageBlockSectionItem >
+                        <apex:outputPanel layout="none">
+                            <label class="slds-form-element__label" for="nameInput">
+                                {!$ObjectType.Metadata_Group__c.Fields.Name.Label}
+                                <abbr class="slds-required">*</abbr>
+                            </label>
+                            <div class="slds-form-element__control">
+                                <apex:inputField value="{!Metadata_Group__c.Name}" styleClass="slds-input" id="nameInput" required="true"/>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                    <apex:pageBlockSectionItem >
+                        <apex:outputPanel layout="none">
+                            <label class="slds-form-element__label" for="descriptionInput">
+                                {!$ObjectType.Metadata_Group__c.Fields.Description__c.Label}
+                                <abbr class="slds-required">*</abbr>
+                            </label>
+                            <div class="slds-form-element__control">
+                                <apex:inputTextarea value="{!Metadata_Group__c.Description__c}" styleClass="slds-input" id="descriptionInput"/>
+                            </div>
+                        </apex:outputPanel>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+            </apex:pageBlock>
+        </apex:form>
+        <apex:form id="groupItemForm">
+            <apex:actionFunction name="addGroupItem" action="{!addGroupItem}" reRender="groupItemForm"/>
+            <apex:inputText value="{!selectedMetadataItemName}" styleClass="selectedMetadataItemName" style="display: none;"/>
+            <apex:pageBlock title="Metadata Group Items">
+                <apex:pageBlockSection columns="1" collapsible="false">
+                    <apex:pageBlockSectionItem >
+                        <apex:pageBlock title="New Metadata Group Item">
+                            <apex:pageBlockSection columns="2">
+                                <apex:pageBlockSectionItem >
+                                    <apex:outputPanel layout="none">
+                                        <label class="slds-form-element__label" for="metadataTypeInput">
+                                            {!$ObjectType.Metadata_Group_Item__c.Fields.Type__c.Label}
+                                            <abbr class="slds-required">*</abbr>
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <apex:selectList id="operatorSelectList" value="{!groupItemFilter.Type__c}" size="1" multiSelect="false" required="true">
+                                                <apex:selectOptions value="{!itemTypeOptions}"/>
+                                            </apex:selectList>
+                                        </div>
+                                    </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem >
+                                    <label class="slds-form-element__label" for="metadataNameOptions">
+                                        {!$Label.Metadata_Name}
+                                        <abbr class="slds-required">*</abbr>
+                                    </label>
+                                    <div class="slds-form-element__control" id="metadataNameOptions">
+                                        <div class="slds-radio_button-group">
+                                            <span class="slds-radio">
+                                              <input type="radio" id="allMetadataNames" name="itemNameOptions" value="{!$Label.ALL}" checked="checked"
+                                                     onclick="enableAdvancedMetadataNameFilter(false);"/>
+                                              <label class="slds-radio__label" for="allMetadataNames">
+                                                <span class="slds-radio_faux"></span>
+                                                  <span class="slds-form-element__label">{!$Label.ALL}</span>
+                                              </label>
+                                            </span>
+                                            <span class="slds-radio">
+                                              <input type="radio" id="advancedMetadataName" name="itemNameOptions" value="Advanced Metadata Name"
+                                                     onclick="enableAdvancedMetadataNameFilter(true);"/>
+                                              <label class="slds-radio__label" for="advancedMetadataName">
+                                                <span class="slds-radio_faux"></span>
+                                                  <span class="slds-form-element__label">Advanced Metadata Name</span>
+                                              </label>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem dataStyleClass="operatorInputData" labelStyleClass="operatorInputLabel">
+                                    <apex:outputPanel layout="none">
+                                        <label class="slds-form-element__label" for="operatorSelectList">
+                                            {!$ObjectType.Metadata_Group_Item__c.Fields.Operator__c.Label}
+                                            <abbr class="slds-required">*</abbr>
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <apex:selectList id="operatorSelectList" value="{!groupItemFilter.Operator__c}" size="1" multiSelect="false" required="true">
+                                                <apex:selectOptions value="{!itemOperatorOptions}"/>
+                                            </apex:selectList>
+                                        </div>
+                                    </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                                <apex:pageBlockSectionItem dataStyleClass="valueInputData" labelStyleClass="valueInputLabel">
+                                    <apex:outputPanel layout="none">
+                                        <label class="slds-form-element__label" for="valueInput">
+                                            {!$ObjectType.Metadata_Group_Item__c.Fields.Value__c.Label}
+                                            <abbr class="slds-required">*</abbr>
+                                        </label>
+                                        <div class="slds-form-element__control">
+                                            <apex:inputField value="{!groupItemFilter.Value__c}" styleClass="slds-input" id="valueInput"/>
+                                        </div>
+                                    </apex:outputPanel>
+                                </apex:pageBlockSectionItem>
+                            </apex:pageBlockSection>
+                            <apex:pageBlockSection >
+                                <apex:commandButton value="Add new Item" action="{!addGroupItem}" reRender="groupItemForm,messages"
+                                                    styleClass="slds-button slds-button_outline-brand" onClick="lockScreen();" onComplete="unlockScreen();"/>
+                            </apex:pageBlockSection>
+                        </apex:pageBlock>
+                    </apex:pageBlockSectionItem>
+                </apex:pageBlockSection>
+                <apex:outputPanel layout="block">
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_striped slds-no-row-hover" id="thisDataTable">
+                        <thead>
+                        <tr class="slds-line-height_reset">
+                            <th class="" scope="col">
+                                <div class="slds-truncate">{!$ObjectType.Metadata_Group_Item__c.Fields.Type__c.Label}</div>
+                            </th>
+                            <th class="" scope="col">
+                                <div class="slds-truncate">{!$Label.Metadata_Name}</div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <apex:repeat value="{!groupItems}" var="item">
+                            <tr class="slds-hint-parent">
+                                <td data-label="{!$ObjectType.Metadata_Group_Item__c.Fields.Type__c.Label}">
+                                    <div class="slds-truncate">{!item.Type__c}</div>
+                                </td>
+                                <td data-label="{!$Label.Metadata_Name}">
+                                    <div class="slds-truncate">{!item.Operator__c + ' ' + item.Value__c}</div>
+                                </td>
+                            </tr>
+                        </apex:repeat>
+                        <apex:outputPanel layout="none" rendered="{!groupItems.size == 0}">
+                            <tr class="slds-hint-parent">
+                                <td colspan="2">
+                                    <div style="text-align: center;">No data to show.</div>
+                                </td>
+                            </tr>
+                        </apex:outputPanel>
+                        </tbody>
+                    </table>
+                </apex:outputPanel>
+            </apex:pageBlock>
+        </apex:form>
+    </div>
+    <script>
+    function enableAdvancedMetadataNameFilter(enable) {
+        document.querySelector('.operatorInputLabel').style.visibility = enable ? 'visible' : 'hidden';
+        document.querySelector('.operatorInputData').style.visibility = enable ? 'visible' : 'hidden';
+        document.querySelector('.valueInputLabel').style.visibility = enable ? 'visible' : 'hidden';
+        document.querySelector('.valueInputData').style.visibility = enable ? 'visible' : 'hidden';
+    }
+
+    function setSelectedMetadataItemName() {
+        var selectedMetadataItemName;
+        var itemNameOptions = document.getElementsByName('itemNameOptions');
+        for(var i = 0; i < itemNameOptions.length; i++) {
+            if(itemNameOptions[i].checked) {
+                selectedMetadataItemName = itemNameOptions[i].value;
+                break;
+            }
+        }
+        document.querySelector(".selectedMetadataItemName").value = selectedMetadataItemName;
+    }
+    </script>
+</apex:page>

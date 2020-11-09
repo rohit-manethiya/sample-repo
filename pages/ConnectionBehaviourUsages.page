@@ -1,0 +1,44 @@
+<apex:page id="ConnectionBehaviourUsages" standardController="Connection_Behavior__c" extensions="ConnectionBehaviorUsageInfoController" lightningStylesheets="true">
+    <c:IncludeStaticsResourceComponent addJQuery="true" addUIjs="true" addUIcss="true" addCometdjs="false" addJCometdjs="false" addJSON2js="false" addJSzipjs="false" />
+    <link rel="stylesheet" type="text/css" href="{!URLFOR($Resource.DataTables10,'DataTables10/datatables.min.css')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.DataTables10,'DataTables10/datatables.min.js')}"/>
+    <apex:pageBlock mode="maindetail" rendered="{!usages.size > 0}">
+        <table class="dataTable list connectionBehaviorTable">
+            <thead>
+                <th>{!$Label.NAME}</th>
+                <th>{!$ObjectType.Environment__c.fields.Type__c.Label}</th>
+                <th>{!$Label.OBJECT}</th>
+            </thead>
+            <tbody>
+                <apex:repeat value="{!usages}" var="wrap">
+                    <tr>
+                        <td>
+                            <apex:outputPanel layout="none" rendered="{!wrap.sObjectType == ENVIRONMENT_C}">
+                                <a href="/{!wrap.thisEnvironment.Id}" target="_blank">{!wrap.thisEnvironment.Name}</a>
+                            </apex:outputPanel>
+                            <apex:outputPanel layout="none" rendered="{!wrap.sObjectType == DEPLOYMENT_FLOW_STEP_C}">
+                                <a href="/{!wrap.thisFlowStep.Id}" target="_blank">{!wrap.thisFlowStep.Name}</a>
+                            </apex:outputPanel>
+                        </td>
+                        <td>
+                            <apex:outputPanel layout="none" rendered="{!wrap.sObjectType == ENVIRONMENT_C}">
+                                {!wrap.thisEnvironment.Type__c}
+                            </apex:outputPanel>
+                        </td>
+                        <td>
+                            {!wrap.sObjectType}
+                        </td>
+                    </tr>
+                </apex:repeat>
+            </tbody>
+        </table>
+        <script>
+            $copado('.connectionBehaviorTable').DataTable({
+                "order" : [[2, 'asc']],
+                "searching" : {!usages.size > 10},
+                "paging" : {!usages.size > 10},
+                "info" : {!usages.size > 10}
+            });
+        </script>
+    </apex:pageBlock>
+</apex:page>
