@@ -1,2 +1,0 @@
-<apex:page action="{!validateOrg}" standardController="Org__c" extensions="ValidateOrgExtension">
-</apex:page>

@@ -1,3 +1,0 @@
-<apex:page standardController="Environment__c" showHeader="false" sidebar="false" applyHtmlTag="false" lightningStylesheets="true">
-    <c:ComplianceScanResult sId="{!Environment__c.Id}" apiName="Environment__c"/>  
-</apex:page>
