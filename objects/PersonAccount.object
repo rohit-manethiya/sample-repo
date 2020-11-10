@@ -5,6 +5,17 @@
         <active>true</active>
         <label>PA record Type</label>
         <picklistValues>
+            <picklist>RM_Sample_Picklist__c</picklist>
+            <values>
+                <fullName>Value 1</fullName>
+                <default>false</default>
+            </values>
+            <values>
+                <fullName>value 2</fullName>
+                <default>false</default>
+            </values>
+        </picklistValues>
+        <picklistValues>
             <picklist>AccountSource</picklist>
             <values>
                 <fullName>Other</fullName>
@@ -174,13 +185,6 @@
             </values>
             <values>
                 <fullName>Subsidiary</fullName>
-                <default>false</default>
-            </values>
-        </picklistValues>
-        <picklistValues>
-            <picklist>RM_Sample_Picklist__c</picklist>
-            <values>
-                <fullName>value 3</fullName>
                 <default>false</default>
             </values>
         </picklistValues>
