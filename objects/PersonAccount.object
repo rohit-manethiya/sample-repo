@@ -180,7 +180,7 @@
         <picklistValues>
             <picklist>RM_Sample_Picklist__c</picklist>
             <values>
-                <fullName>value 2</fullName>
+                <fullName>value 3</fullName>
                 <default>false</default>
             </values>
         </picklistValues>
